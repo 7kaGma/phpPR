@@ -53,11 +53,17 @@ $jsonRe =str_replace("\\n","",$json);
     table td{
       border: solid 1px lightgray;
     }
+    .canvasframe{
+      width: 500px;
+      height:500px;
+    }
   </style>
 </head>
 <body>
 <p>男女比</p>
-<canvas id="mychart"></canvas>
+<div class="canvasframe">
+  <canvas id="mychart"></canvas>
+</div>
 <p>作品期待度:<span id="avg"></span></p>
 <p>回答一覧</p>
 <div>
@@ -133,26 +139,21 @@ function average(){
 /*==========
 円グラフの作成
 ==========*/
-let genderRate={
-  male:0,
-  female:0
-}
-
-function calc(){
-  let genderArray=[];
-  let counts={
+let counts={
     total:0,
     male:0,
     female:0
-  };
+};
+
+function calc(){
+  let genderArray=[];
   // 関数の実行
   pushGender(genderArray);
   countGender(genderArray,counts);
   // 割合の計算
-  genderRate.male=Math.floor((counts.male/counts.total)*100);
-  genderRate.female=Math.floor((counts.female/counts.total)*100);
-  console.log(genderRate);
+  console.log(genderArray);
 }
+
 
 // 男性と女性の数を数える
 // 引数で参照渡してその引数の値を更新させたいとき、オブジェクトなら更新が反映できる(あるいは戻り値を使う)
@@ -169,12 +170,35 @@ function pushGender(genderArray){
   });
 }
 
+
+
 /*=========
 実行関数
 ==========*/
 table();
 avg();
 calc();
+
+//円グラフの描画
+const  ctx = document.getElementById("mychart");
+  const myLineChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: [
+    'male',
+    'female',
+  ],
+  datasets: [{
+    label: '男女比',
+    data: [counts.male, counts.female],
+    backgroundColor: [
+      'rgb(54, 162, 235)',
+      'rgb(255, 99, 132)',
+    ],
+    hoverOffset: 10
+  }]
+  }
+  });
 
 </script> 
 </body>

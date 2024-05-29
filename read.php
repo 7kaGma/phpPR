@@ -57,6 +57,7 @@ $jsonRe =str_replace("\\n","",$json);
 </head>
 <body>
 <p>男女比</p>
+<canvas id="mychart"></canvas>
 <p>作品期待度:<span id="avg"></span></p>
 <p>回答一覧</p>
 <div>
@@ -68,10 +69,17 @@ $jsonRe =str_replace("\\n","",$json);
 </div>
 
 <!-- JSの記述 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+/*==========
+jsonデータの受け取り
+=========*/
 const data = JSON.parse('<?php echo $jsonRe; ?>');
 console.dir(data);
 
+/*==========
+表の作成
+==========*/
 function table(){
   const place =document.getElementById("table");
   firstRowMake();
@@ -104,6 +112,9 @@ function Rowmake(place){
   }
 }
 
+/*==========
+平均の算出
+==========*/
 function avg(){
   const place = document.getElementById("avg");
   let valAvg = average();
@@ -113,14 +124,49 @@ function avg(){
 function average(){
   let total =0;
   for(i=1;i<=Object.keys(data).length;i++){
-    console.log(data[`data${i}`]);
     total+=parseInt(data[`data${i}`].expect,10);
   }
-  console.log(total);
-  console.log(Object.keys(data).length);
   let average =(Math.floor((total/Object.keys(data).length)*10)/10);
-  console.log(average);
   return average;
+}
+
+/*==========
+円グラフの作成
+==========*/
+let genderRate={
+  male:0,
+  female:0
+}
+
+function calc(){
+  let genderArray=[];
+  let counts={
+    total:0,
+    male:0,
+    female:0
+  };
+  // 関数の実行
+  pushGender(genderArray);
+  countGender(genderArray,counts);
+  // 割合の計算
+  genderRate.male=Math.floor((counts.male/counts.total)*100);
+  genderRate.female=Math.floor((counts.female/counts.total)*100);
+  console.log(genderRate);
+}
+
+// 男性と女性の数を数える
+// 引数で参照渡してその引数の値を更新させたいとき、オブジェクトなら更新が反映できる(あるいは戻り値を使う)
+function countGender(genderArray,counts){
+  counts.total = genderArray.length;
+  counts.male = genderArray.filter((element)=>element==="男性").length;
+  counts.female = genderArray.filter((element)=>element==="女性").length;
+}
+
+function pushGender(genderArray){
+  Object.keys(data).forEach(key=>{
+    const value = data[key].gender;
+    genderArray.push(value);
+  });
 }
 
 /*=========
@@ -128,6 +174,7 @@ function average(){
 ==========*/
 table();
 avg();
+calc();
 
 </script> 
 </body>

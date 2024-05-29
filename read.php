@@ -17,7 +17,7 @@ while(!feof($file)){
     $array=explode(",",$text);
   // １回の送信のデータを連想配列化
     $association=[];
-    $k =["time","name","age","gender","expext","thoughts"];
+    $k =["time","name","age","gender","expect","thoughts"];
     for($a=0;$a<=count($array)-1;$a++){
       $association=array_merge($association,array($k[$a]=>$array[$a]));
     }
@@ -56,9 +56,8 @@ $jsonRe =str_replace("\\n","",$json);
   </style>
 </head>
 <body>
-<p>年齢比</p>
 <p>男女比</p>
-<p>作品期待度</p>
+<p>作品期待度:<span id="avg"></span></p>
 <p>回答一覧</p>
 <div>
   <table id="table">
@@ -105,10 +104,30 @@ function Rowmake(place){
   }
 }
 
+function avg(){
+  const place = document.getElementById("avg");
+  let valAvg = average();
+  place.textContent = valAvg;
+}
+
+function average(){
+  let total =0;
+  for(i=1;i<=Object.keys(data).length;i++){
+    console.log(data[`data${i}`]);
+    total+=parseInt(data[`data${i}`].expect,10);
+  }
+  console.log(total);
+  console.log(Object.keys(data).length);
+  let average =(Math.floor((total/Object.keys(data).length)*10)/10);
+  console.log(average);
+  return average;
+}
+
 /*=========
 実行関数
 ==========*/
 table();
+avg();
 
 </script> 
 </body>
